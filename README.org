@@ -1,0 +1,4 @@
+* PI/E
+I created this repository during a c++ course. It's meant to be an excercise.
+
+The Repository contains a data structure, which is my naive approach to precision arithmetic. GreatBin are numbers with the base of 2^31.

@@ -4,7 +4,7 @@
 #include <limits>
 #include <math.h>
 
-#include "GreatBin.cpp"
+#include "GreatBin.hpp"
 
 int main(int argc, char* argv[]) {
   if(argc != 3){std::cout << "zu wenig argumente " << std::endl; return 1;}

@@ -7,6 +7,7 @@
 
 struct GreatBin {
   private:
+        // TODO Update Chunk number in arithmetic functions!
     int CHUNK_NO_;
   public:
     std::vector<int> chunks_;
@@ -39,8 +40,12 @@ struct GreatBin {
     /// @param input GreatBin
     /// @returns true if this is smaller than the input
     bool less(GreatBin);
+
+    // TODO
     bool equals(GreatBin);
+
     bool iszero();
+
     void delete_leading_zeros();
 
     // Prints the digits of the GreatBin.
@@ -54,18 +59,22 @@ struct GreatBin {
 
     // arithmetic
     GreatBin add(GreatBin);
+    //GreatBin add_overflow(GreatBin);
+    GreatBin sub(GreatBin);
     GreatBin mul(GreatBin&);
-    GreatBin div(GreatBin&);
+    std::pair<GreatBin,GreatBin> div(GreatBin&);
     // negates the input. s.t. bin.add(bin.neg()) = 0
     // TODO
     GreatBin neg();
     GreatBin bitshift();
+    //GreatBin bitshift_overflow();
     GreatBin digitshift(int);
     GreatBin gb_and(GreatBin);
     GreatBin gb_xor(GreatBin);
 
     // Getter & Setter
     inline int getChunkNo(){return this->CHUNK_NO_;}
+    inline void setChunkNo(int CHUNK_NO_){this->CHUNK_NO_ = CHUNK_NO_;}
 };
 
 int longest_no_of_digits(GreatBin, GreatBin);
@@ -73,6 +82,6 @@ int longest_no_of_digits(GreatBin, GreatBin);
 int longest_no_of_digits(std::vector<GreatBin>);
 
 inline GreatBin zero(int N = 1){return std::vector<int>(N,0);}
-inline GreatBin one(int N = 1){return std::vector<int>(N,1);}
+GreatBin one(int N=1);
 
 #endif // GREATBIN_HPP

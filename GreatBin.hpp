@@ -7,10 +7,9 @@
 
 struct GreatBin {
   private:
-        // TODO Update Chunk number in arithmetic functions!
-    int CHUNK_NO_;
+    int DIGIT_NO_;
   public:
-    std::vector<int> chunks_;
+    std::vector<int> digits_;
 
     // Constructors:
 
@@ -21,7 +20,7 @@ struct GreatBin {
     GreatBin(long);
 
     // Returns a GreatBin built from the digits given in the input vector.
-    // @param chunks_ a vector containing integers.
+    // @param digits_ a vector containing integers.
     // @return GreatBin whose digits are the integers of the input vector.
     // Note that the first digit is given by the first entry and so forth.
     // I.e. the digits of a GreatBin are reversed compared to usual numbers.
@@ -34,7 +33,7 @@ struct GreatBin {
     /// Tests if this GreatBin has more digits than the other
     /// @param other input GreatBin
     /// @return true if this GreatBin has strictly more digits then other
-    inline bool longer(GreatBin other){return this->CHUNK_NO_ > other.getChunkNo();}
+    inline bool longer(GreatBin other){return this->DIGIT_NO_ > other.getDigitNo();}
 
     /// Compares the numerical size of two GreatBins
     /// @param input GreatBin
@@ -51,7 +50,7 @@ struct GreatBin {
     // Prints the digits of the GreatBin.
     // The order of the digits is reversed compared to traditional numbers.
     // I.e. the first digit is on the left, the last digit on the right.
-    void print_chunks();
+    void print_digits();
 
     // Returns the representation of the GreatBin in decimal base as a string.
     std::string dec_string();
@@ -62,10 +61,10 @@ struct GreatBin {
     //GreatBin add_overflow(GreatBin);
     GreatBin sub(GreatBin);
     GreatBin mul(GreatBin&);
+    std::pair<GreatBin,GreatBin> div_naive(GreatBin&);
     std::pair<GreatBin,GreatBin> div(GreatBin&);
     // negates the input. s.t. bin.add(bin.neg()) = 0
-    // TODO
-    GreatBin neg();
+    // GreatBin neg();
     GreatBin bitshift();
     //GreatBin bitshift_overflow();
     GreatBin digitshift(int);
@@ -73,8 +72,8 @@ struct GreatBin {
     GreatBin gb_xor(GreatBin);
 
     // Getter & Setter
-    inline int getChunkNo(){return this->CHUNK_NO_;}
-    inline void setChunkNo(int CHUNK_NO_){this->CHUNK_NO_ = CHUNK_NO_;}
+    inline int getDigitNo(){return this->DIGIT_NO_;}
+    inline void setDigitNo(int DIGIT_NO_){this->DIGIT_NO_ = DIGIT_NO_;}
 };
 
 int longest_no_of_digits(GreatBin, GreatBin);

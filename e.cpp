@@ -18,17 +18,17 @@ int main(int argc, char* argv[]) {
   GreatBin bin2 {val2};
   GreatBin max_bin {max};
   std::cout << "bin1 and bin2 \n";
-  bin1.print_chunks();
-  bin2.print_chunks();
+  bin1.print_digits();
+  bin2.print_digits();
 
-  std::pair<GreatBin,GreatBin> div_pair {bin1.div(bin2)};
+  std::pair<GreatBin,GreatBin> div_pair {bin1.div_naive(bin2)};
   std::cout << " bin1 / bin2 = \n";
-  div_pair.first.print_chunks();
-  div_pair.second.print_chunks();
+  div_pair.first.print_digits();
+  div_pair.second.print_digits();
 
   GreatBin bin4 {bin1.mul(bin2)};
   std::cout << " bin1 * bin2 = \n";
-  bin4.print_chunks();
+  bin4.print_digits();
 
   return 0;
 }

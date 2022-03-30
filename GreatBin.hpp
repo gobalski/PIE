@@ -1,6 +1,7 @@
 #ifndef GREATBIN_HPP
 #define GREATBIN_HPP
 
+#include <string>
 #include <vector>
 #include <limits>
 #include <iostream>
@@ -8,6 +9,8 @@
 struct GreatBin {
   private:
     int DIGIT_NO_;
+    // helper function for the division algorithm
+    GreatBin find_beta(GreatBin&, GreatBin&, GreatBin*);
   public:
     std::vector<int> digits_;
 
@@ -52,8 +55,21 @@ struct GreatBin {
     // I.e. the first digit is on the left, the last digit on the right.
     void print_digits();
 
+    inline std::ostream& print_digits(std::ostream& os) {
+      std::string str {""};
+      for (int digit : digits_ ){
+        str += std::to_string(digit) + " ";
+      }
+      return os << str;
+    }
+
+    inline std::ostream& print(std::ostream& os) {return os << dec_string();}
+
     // Returns the representation of the GreatBin in decimal base as a string.
     std::string dec_string();
+
+    // Returns the decade representation as a vector
+    std::vector<short> dec_vector();
 
 
     // arithmetic
@@ -79,6 +95,8 @@ struct GreatBin {
 int longest_no_of_digits(GreatBin, GreatBin);
 // TODO
 int longest_no_of_digits(std::vector<GreatBin>);
+
+inline std::ostream& operator<<(std::ostream& os, GreatBin& b) {return b.print(os);}
 
 inline GreatBin zero(int N = 1){return std::vector<int>(N,0);}
 GreatBin one(int N=1);

@@ -31,10 +31,25 @@ void GreatBin::print_digits(){
   std::cout << std::endl;
 }
 
-std::string dec_string(){
-  return "NOT IMPLEMENTED";
+std::vector<short> GreatBin::dec_vector(){
+  GreatBin TEN {10};
+  std::pair<GreatBin, GreatBin> division_res {this->div(TEN)};
+  std::vector<short> dec_digits {(short) division_res.second.digits_[0]};
+  while (!division_res.first.iszero()){
+    division_res = division_res.first.div(TEN);
+    dec_digits.insert(dec_digits.begin(), (short) division_res.second.digits_[0]);
+  }
+  return dec_digits;
 }
 
+std::string GreatBin::dec_string(){
+  std::vector<short> dec_digits {this->dec_vector()};
+  std::string str {""};
+  for (short digit : dec_digits) {
+    str += std::to_string(digit);
+  }
+  return str;
+}
 
 // utils
 
@@ -189,15 +204,19 @@ GreatBin GreatBin::add(GreatBin summand){
 GreatBin GreatBin::sub(GreatBin other){
   // crude error. no negative numbers allowed!
   if (this -> less(other)) { return {-1}; }
-  int this_digit_no = this->DIGIT_NO_;
-  int tmp;
+  int this_digit_no {this->DIGIT_NO_}, tmp, other_digit;
   bool carry {0};
   const int MAX { std::numeric_limits<int>::max() };
   std::vector<int> res;
   for (int i = 0; i < this_digit_no; i++) {
-    tmp = this->digits_[i] - other.digits_[i] - carry;
+    if (other.getDigitNo() > i) {
+      other_digit = other.digits_[i];
+    } else {
+      other_digit = 0;
+    }
+    tmp = this->digits_[i] - other_digit - carry;
     if (tmp < 0){
-      tmp = MAX + tmp;
+      tmp = tmp + MAX + 1;
       carry = 1;
     } else{
       carry = 0;
@@ -249,11 +268,14 @@ GreatBin GreatBin::mul(GreatBin& factor){
   GreatBin res = zero(factor1_digit_no + factor2_digit_no);
   long tmp;
 
+  // std::cout << "mul DEBUG \n";
+  // std::cout << "f1 digit_no: " << factor1_digit_no << "  f2 digit_no: " << factor2_digit_no << "\n";
+
   for (int digit1 = 0; digit1 < factor1_digit_no; digit1++) {
     for (int digit2 = 0; digit2 < factor2_digit_no; digit2++) {
       tmp = (long) this->digits_[digit1] * factor.digits_[digit2];
       GreatBin summand {tmp};
-      summand.digitshift(digit1 + digit2);
+      summand = summand.digitshift(digit1 + digit2);
       res = res.add(summand);
     }
   }
@@ -268,8 +290,7 @@ std::pair<GreatBin,GreatBin> GreatBin::div_naive(GreatBin& divisor){
   GreatBin remainder {*this}, result {1}, tmp {0}, remainder_tmp {remainder};
   bool done {false};
   while (!done) {
-    tmp = divisor.mul(result);
-    remainder_tmp = this->sub(tmp);
+    remainder_tmp = remainder_tmp.sub(divisor);
     if (remainder_tmp.less(zero())){
       done = true;
     } else {
@@ -280,11 +301,81 @@ std::pair<GreatBin,GreatBin> GreatBin::div_naive(GreatBin& divisor){
   return {result.sub(one()), remainder};
 }
 
+GreatBin GreatBin::find_beta(GreatBin& d, GreatBin& m, GreatBin* r){
+  std::string flag {"to_small"};
+  int beta_int {0}, inc {std::numeric_limits<int>::max() >> 1};
+  GreatBin beta {beta_int};
+  while (flag!="done"){
+    *r = d.sub(m.mul(beta));
+    if (r->less(zero())) {
+      // decrease increment if r(beta) >= m in the previous step
+      if (flag=="to_small"){
+        inc = inc >> 1;
+        flag = "to_big";
+      }
+      beta_int -= inc;
+    } else if (!(r->less(m))) {
+      // decrease increment if r(beta) < 0 in the previous step
+      if (flag=="to_big"){
+        inc = inc >> 1;
+        flag = "to_small";
+      }
+      beta_int += inc;
+    } else {
+      flag = "done";
+      return beta;
+    }
+    beta.digits_[0] = beta_int;
+  }
+  // error return
+  return {-1};
+}
+
 // division algorithm: https://en.wikipedia.org/wiki/Long_division#Algorithm_for_arbitrary_base
 std::pair<GreatBin,GreatBin> GreatBin::div(GreatBin& divisor){
-  long base {(long) std::numeric_limits<int>::max() + 1};
-  int no_of_digits_N = this->getDigitNo();
-  int no_of_digits_D = divisor.getDigitNo();
+  GreatBin base {(long) std::numeric_limits<int>::max() + 1};
+  int digits_no_N {this->getDigitNo()}, digits_no_D {divisor.getDigitNo()};
+  GreatBin d {0};
+  std::vector<int> r_digits { this->digits_ };
+  r_digits.erase(r_digits.begin(), r_digits.begin() + digits_no_N - digits_no_D + 1);
+  GreatBin q {0},r { r_digits };
+
+  if (r.digits_.size() == 0) { r.digits_.push_back(0); }
+
+  // std::cout << "div DEBUG \n";
+  // std::cout << "N no_digits: " << digits_no_N << " D no_digits: " << digits_no_D << "\n";
+  // std::cout << "r: \n";
+  // r.print_digits();
+
+  for (int i = 0; i <= digits_no_N - digits_no_D ; i++) {
+
+    // std::cout << "i: " << i << "\n";
+
+    GreatBin alpha { this->digits_.at(digits_no_N - 1 - (i+digits_no_D-1)) };
+
+    // std::cout << "alpha:\n";
+    // alpha.print_digits();
+
+    d = (base.mul(r)).add(alpha);
+
+    // std::cout << "d:\n";
+    // d.print_digits();
+
+    GreatBin beta {find_beta(d, divisor, &r)};
+
+    // std::cout << "r: \n";
+    // r.print_digits();
+    // std::cout << "beta: \n";
+    // beta.print_digits();
+
+    if (beta.less(zero())) { std::cerr << "div: find_beta() went wrong!" << std::endl; }
+
+    q = base.mul(q).add(beta);
+
+    // std::cout << "q: \n";
+    // q.print_digits();
+  }
+  return std::pair<GreatBin, GreatBin> {q, r};
 }
 
 int longest_no_of_digits(GreatBin bin1, GreatBin bin2){

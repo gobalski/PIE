@@ -7,7 +7,7 @@
 #include <iostream>
 
 struct GreatBin {
-  private:
+  protected:
     int DIGIT_NO_;
     // helper function for the division algorithm
     GreatBin find_beta(GreatBin&, GreatBin&, GreatBin*);
@@ -90,15 +90,42 @@ struct GreatBin {
     // Getter & Setter
     inline int getDigitNo(){return this->DIGIT_NO_;}
     inline void setDigitNo(int DIGIT_NO_){this->DIGIT_NO_ = DIGIT_NO_;}
+
+    // statics
+    static inline GreatBin zero(int N = 1){return std::vector<int>(N,0);}
+    static GreatBin one(int N=1);
+    static int longest_no_of_digits(GreatBin, GreatBin);
 };
 
-int longest_no_of_digits(GreatBin, GreatBin);
-// TODO
-int longest_no_of_digits(std::vector<GreatBin>);
+struct GreatBinExp{
+    // TODO erben oder komponieren???
+    // komposition scheint logischer. GBE /hat/ einen GreatBin.
+  protected:
+    int exponent_;
+    GreatBin mantisse_;
+  public:
+
+    // constructor
+    GreatBinExp(GreatBin, int);
+
+    GreatBinExp add(GreatBinExp);
+    bool less(GreatBinExp);
+    bool equals(GreatBinExp);
+    bool iszero(GreatBinExp);
+
+    // Returns the representation of the GreatBin in decimal base as a string.
+    std::string dec_string();
+    // Returns the decade representation as a vector
+    std::vector<short> dec_vector();
+
+    // Getter & Setter
+    inline int getExponent(){return this->exponent_;}
+    inline void setExponent(int e){this->exponent_ = e;}
+    inline GreatBin getMantisse(){return this->mantisse_;}
+    inline void setMantisse(GreatBin m){this->mantisse_ = m;}
+};
 
 inline std::ostream& operator<<(std::ostream& os, GreatBin& b) {return b.print(os);}
 
-inline GreatBin zero(int N = 1){return std::vector<int>(N,0);}
-GreatBin one(int N=1);
 
 #endif // GREATBIN_HPP

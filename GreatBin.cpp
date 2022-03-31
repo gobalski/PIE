@@ -4,10 +4,10 @@
 // Constructors
 
 GreatBin::GreatBin(int val)
-  :DIGIT_NO_(1), digits_({val}){}
+  :DIGIT_NO_(1), digits_({val}), exponent_(0){}
 
 GreatBin::GreatBin(long val)
-  :DIGIT_NO_(), digits_({}){
+  :DIGIT_NO_(), digits_({}), exponent_(0){
   long base = (long) std::numeric_limits<int>::max() + 1;
   int digit;
   while (val!=0){
@@ -19,7 +19,7 @@ GreatBin::GreatBin(long val)
 }
 
 GreatBin::GreatBin(std::vector<int> digits_)
-  :DIGIT_NO_(digits_.size()), digits_(digits_){}
+  :DIGIT_NO_(digits_.size()), digits_(digits_), exponent_(0){}
 
 
 // print stuff
@@ -378,7 +378,7 @@ std::pair<GreatBin,GreatBin> GreatBin::div(GreatBin& divisor){
   return std::pair<GreatBin, GreatBin> {q, r};
 }
 
-int longest_no_of_digits(GreatBin bin1, GreatBin bin2){
+int GreatBin::longest_no_of_digits(GreatBin bin1, GreatBin bin2){
   int bin1_DigitNo {bin1.getDigitNo()}, bin2_DigitNo {bin2.getDigitNo()};
   if (bin1_DigitNo > bin2_DigitNo) {
     return bin1_DigitNo;
@@ -387,7 +387,7 @@ int longest_no_of_digits(GreatBin bin1, GreatBin bin2){
   }
 }
 
-GreatBin one(int N){
+GreatBin GreatBin::one(int N){
   std::vector<int> digits = { 1 };
   for (int i = 1; i < N; i++) {
     digits.push_back(0);

@@ -4,42 +4,29 @@
 #include <limits>
 #include <math.h>
 
-#include "GreatBin.hpp"
 #include "GB_math.hpp"
+#include "GreatBin.hpp"
+#include "GreatBinExp.hpp"
 
 int main(int argc, char* argv[]) {
   using std::cout;
   using std::endl;
 
-  int max = std::numeric_limits<int>::max();
-  // cout << "max: " << max << "\n";
-  // long min = std::numeric_limits<long>::min();
+  int precision = std::stoi(argv[1]);
 
-  GreatBin TEN {10};
+  cout << "summing factorials..\n";
 
-  std::vector<int> inp_digits;
-  for (int i =1; i < argc; i++){
-    inp_digits.push_back(std::stoi(argv[i]));
-  }
-  GreatBin inp {inp_digits};
+  GreatBinExp euler = GB_math::E(precision);
 
+  cout << "converting to decimal..\n";
+  cout << "Eulers Number: \n" << euler << endl;
 
-  int prec {20};
+  cout << "summing other factorials..\n";
 
-  GreatBin inv_inp { GB_math::reziproc(inp, prec) };
+  GreatBinExp pi = GB_math::PI(precision);
 
-  cout << "precision: " << prec << "\n\n";
-
-  cout << " BASE 2^31 \n";
-  cout << " 1 / ";
-  inp.print_digits(cout);
-  cout << " = " ;
-  inv_inp.print_digits(cout);
-  cout << "\n\n";
-
-  cout << " BASE 10 \n";
-  cout << " 1 / " << inp << " = " << inv_inp << endl;
-
+  cout << "converting to decimal..\n";
+  cout << "Pi: \n" << pi << endl;
 
   return 0;
 }

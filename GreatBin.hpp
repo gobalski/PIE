@@ -10,7 +10,7 @@ struct GreatBin {
   protected:
     int DIGIT_NO_;
     // helper function for the division algorithm
-    GreatBin find_beta(GreatBin&, GreatBin&, GreatBin*);
+    GreatBin find_beta(const GreatBin&,const GreatBin&, GreatBin*) const;
   public:
     std::vector<int> digits_;
 
@@ -41,27 +41,18 @@ struct GreatBin {
     /// Compares the numerical size of two GreatBins
     /// @param input GreatBin
     /// @returns true if this is smaller than the input
-    bool less(GreatBin);
+    bool less(const GreatBin&) const;
 
     // TODO
-    bool equals(GreatBin);
+    bool equals(GreatBin&);
 
     bool iszero();
 
     void delete_leading_zeros();
 
     // Prints the digits of the GreatBin.
-    // The order of the digits is reversed compared to traditional numbers.
-    // I.e. the first digit is on the left, the last digit on the right.
     void print_digits();
-
-    inline std::ostream& print_digits(std::ostream& os) {
-      std::string str {""};
-      for (int digit : digits_ ){
-        str += std::to_string(digit) + " ";
-      }
-      return os << str;
-    }
+    std::ostream& print_digits(std::ostream&);
 
     inline std::ostream& print(std::ostream& os) {return os << dec_string();}
 
@@ -73,57 +64,31 @@ struct GreatBin {
 
 
     // arithmetic
-    GreatBin add(GreatBin);
+    GreatBin add(const GreatBin&);
     //GreatBin add_overflow(GreatBin);
-    GreatBin sub(GreatBin);
-    GreatBin mul(GreatBin&);
+    GreatBin sub(const GreatBin&) const;
+    GreatBin mul(const GreatBin&) const;
     std::pair<GreatBin,GreatBin> div_naive(GreatBin&);
-    std::pair<GreatBin,GreatBin> div(GreatBin&);
+    std::pair<GreatBin,GreatBin> div (const GreatBin&) const;
     // negates the input. s.t. bin.add(bin.neg()) = 0
     // GreatBin neg();
     GreatBin bitshift();
     //GreatBin bitshift_overflow();
     GreatBin digitshift(int);
-    GreatBin gb_and(GreatBin);
-    GreatBin gb_xor(GreatBin);
+    GreatBin strip(int);
+    GreatBin gb_and(const GreatBin&);
+    GreatBin gb_xor(const GreatBin&);
 
     // Getter & Setter
-    inline int getDigitNo(){return this->DIGIT_NO_;}
+    inline int getDigitNo() const {return this->DIGIT_NO_;}
     inline void setDigitNo(int DIGIT_NO_){this->DIGIT_NO_ = DIGIT_NO_;}
 
     // statics
     static inline GreatBin zero(int N = 1){return std::vector<int>(N,0);}
     static GreatBin one(int N=1);
-    static int longest_no_of_digits(GreatBin, GreatBin);
+    static int longest_no_of_digits(const GreatBin&,const GreatBin&);
 };
 
-struct GreatBinExp{
-    // TODO erben oder komponieren???
-    // komposition scheint logischer. GBE /hat/ einen GreatBin.
-  protected:
-    int exponent_;
-    GreatBin mantisse_;
-  public:
-
-    // constructor
-    GreatBinExp(GreatBin, int);
-
-    GreatBinExp add(GreatBinExp);
-    bool less(GreatBinExp);
-    bool equals(GreatBinExp);
-    bool iszero(GreatBinExp);
-
-    // Returns the representation of the GreatBin in decimal base as a string.
-    std::string dec_string();
-    // Returns the decade representation as a vector
-    std::vector<short> dec_vector();
-
-    // Getter & Setter
-    inline int getExponent(){return this->exponent_;}
-    inline void setExponent(int e){this->exponent_ = e;}
-    inline GreatBin getMantisse(){return this->mantisse_;}
-    inline void setMantisse(GreatBin m){this->mantisse_ = m;}
-};
 
 inline std::ostream& operator<<(std::ostream& os, GreatBin& b) {return b.print(os);}
 

@@ -4,10 +4,10 @@
 // Constructors
 
 GreatBin::GreatBin(int val)
-  :DIGIT_NO_(1), digits_({val}), exponent_(0){}
+  :DIGIT_NO_(1), digits_({val}){}
 
 GreatBin::GreatBin(long val)
-  :DIGIT_NO_(), digits_({}), exponent_(0){
+  :DIGIT_NO_(), digits_({}){
   long base = (long) std::numeric_limits<int>::max() + 1;
   int digit;
   while (val!=0){
@@ -19,16 +19,27 @@ GreatBin::GreatBin(long val)
 }
 
 GreatBin::GreatBin(std::vector<int> digits_)
-  :DIGIT_NO_(digits_.size()), digits_(digits_), exponent_(0){}
+  :DIGIT_NO_(digits_.size()), digits_(digits_){}
 
 
 // print stuff
 
 void GreatBin::print_digits(){
-  for ( int digit : this->digits_ ) {
-    std::cout << digit << "  ";
+  for (auto rit = this->digits_.rbegin() ; rit != this->digits_.rend(); ++rit) {
+    std::cout << *rit << " ";
   }
+  // for ( int digit : this->digits_ ) {
+  //   std::cout << digit << "  ";
+  // }
   std::cout << std::endl;
+}
+
+std::ostream& GreatBin::print_digits(std::ostream& os) {
+  std::string str {""};
+  for (auto rit = this->digits_.rbegin() ; rit != this->digits_.rend(); ++rit) {
+    str += std::to_string(*rit) + " ";
+  }
+  return os << str;
 }
 
 std::vector<short> GreatBin::dec_vector(){
@@ -82,7 +93,7 @@ bool GreatBin::iszero(){
   return true;
 }
 
-bool GreatBin::less(GreatBin bin){
+bool GreatBin::less(const GreatBin& bin) const{
   if (this->DIGIT_NO_ < bin.getDigitNo()) { return true; }
   if (this->DIGIT_NO_ > bin.getDigitNo()) { return false; }
   for ( int i=this->DIGIT_NO_-1; i>-1; i--) {
@@ -96,7 +107,7 @@ bool GreatBin::less(GreatBin bin){
 
 // arithmetics
 
-GreatBin GreatBin::gb_and(GreatBin other){
+GreatBin GreatBin::gb_and(const GreatBin& other){
   // build digits_ for return, s.t. its length coresponds to the longer operand
   int res_digit_no {longest_no_of_digits(*this, other)}, this_digit, other_digit;
   std::vector <int> res_digits(res_digit_no);
@@ -110,7 +121,7 @@ GreatBin GreatBin::gb_and(GreatBin other){
   return {res_digits};
 }
 
-GreatBin GreatBin::gb_xor(GreatBin other){
+GreatBin GreatBin::gb_xor(const GreatBin& other){
   // build digits_ for return, s.t. its length coresponds to the longer operand
   int res_digit_no {longest_no_of_digits(*this, other)}, this_digit, other_digit;
   std::vector <int> res_digits(res_digit_no);
@@ -187,8 +198,16 @@ GreatBin GreatBin::digitshift(int N){
   return digits;
 }
 
+GreatBin GreatBin::strip(int N){
+  std::vector<int> digits {};
+  for ( int i = 0; i<this->getDigitNo() - N; i++ ){
+    digits.push_back(this->digits_.at(i));
+  }
+  return { digits };
+}
+
 // Uses bitwise operations to implement addition.
-GreatBin GreatBin::add(GreatBin summand){
+GreatBin GreatBin::add(const GreatBin& summand){
   GreatBin res { this->gb_xor(summand) };
   GreatBin carry { this->gb_and(summand) };
   GreatBin tmp {res};
@@ -201,7 +220,7 @@ GreatBin GreatBin::add(GreatBin summand){
   return res;
 }
 
-GreatBin GreatBin::sub(GreatBin other){
+GreatBin GreatBin::sub(const GreatBin& other) const{
   // crude error. no negative numbers allowed!
   if (this -> less(other)) { return {-1}; }
   int this_digit_no {this->DIGIT_NO_}, tmp, other_digit;
@@ -262,7 +281,7 @@ GreatBin GreatBin::sub(GreatBin other){
 // }
 
 // Uses the usual multiplication algorithm.
-GreatBin GreatBin::mul(GreatBin& factor){
+GreatBin GreatBin::mul(const GreatBin& factor) const {
   int factor1_digit_no = this->DIGIT_NO_;
   int factor2_digit_no = factor.getDigitNo();
   GreatBin res = zero(factor1_digit_no + factor2_digit_no);
@@ -288,26 +307,28 @@ std::pair<GreatBin,GreatBin> GreatBin::div_naive(GreatBin& divisor){
   // if (this->equals(divisor)) { return {1}; }
   if (this->less(divisor))   { return {zero(), *this}; }
   GreatBin remainder {*this}, result {1}, tmp {0}, remainder_tmp {remainder};
+  GreatBin ZERO {zero()}, ONE {one()};
   bool done {false};
   while (!done) {
     remainder_tmp = remainder_tmp.sub(divisor);
-    if (remainder_tmp.less(zero())){
+    if (remainder_tmp.less(ZERO)){
       done = true;
     } else {
       remainder = remainder_tmp;
-      result = result.add(one());
+      result = result.add(ONE);
     }
   }
-  return {result.sub(one()), remainder};
+  return {result.sub(ONE), remainder};
 }
 
-GreatBin GreatBin::find_beta(GreatBin& d, GreatBin& m, GreatBin* r){
+GreatBin GreatBin::find_beta(const GreatBin& d, const GreatBin& m, GreatBin* r) const {
   std::string flag {"to_small"};
   int beta_int {0}, inc {std::numeric_limits<int>::max() >> 1};
-  GreatBin beta {beta_int};
+  GreatBin beta {beta_int}, ZERO {zero()};
   while (flag!="done"){
-    *r = d.sub(m.mul(beta));
-    if (r->less(zero())) {
+    GreatBin m_x_beta = m.mul(beta);
+    *r = d.sub(m_x_beta);
+    if (r->less(ZERO)) {
       // decrease increment if r(beta) >= m in the previous step
       if (flag=="to_small"){
         inc = inc >> 1;
@@ -332,8 +353,8 @@ GreatBin GreatBin::find_beta(GreatBin& d, GreatBin& m, GreatBin* r){
 }
 
 // division algorithm: https://en.wikipedia.org/wiki/Long_division#Algorithm_for_arbitrary_base
-std::pair<GreatBin,GreatBin> GreatBin::div(GreatBin& divisor){
-  GreatBin base {(long) std::numeric_limits<int>::max() + 1};
+std::pair<GreatBin,GreatBin> GreatBin::div(const GreatBin& divisor) const {
+  GreatBin base {(long) std::numeric_limits<int>::max() + 1}, ZERO {zero()};
   int digits_no_N {this->getDigitNo()}, digits_no_D {divisor.getDigitNo()};
   GreatBin d {0};
   std::vector<int> r_digits { this->digits_ };
@@ -368,7 +389,7 @@ std::pair<GreatBin,GreatBin> GreatBin::div(GreatBin& divisor){
     // std::cout << "beta: \n";
     // beta.print_digits();
 
-    if (beta.less(zero())) { std::cerr << "div: find_beta() went wrong!" << std::endl; }
+    if (beta.less(ZERO)) { std::cerr << "div: find_beta() went wrong!" << std::endl; }
 
     q = base.mul(q).add(beta);
 
@@ -378,7 +399,7 @@ std::pair<GreatBin,GreatBin> GreatBin::div(GreatBin& divisor){
   return std::pair<GreatBin, GreatBin> {q, r};
 }
 
-int GreatBin::longest_no_of_digits(GreatBin bin1, GreatBin bin2){
+int GreatBin::longest_no_of_digits(const GreatBin& bin1,const GreatBin& bin2){
   int bin1_DigitNo {bin1.getDigitNo()}, bin2_DigitNo {bin2.getDigitNo()};
   if (bin1_DigitNo > bin2_DigitNo) {
     return bin1_DigitNo;

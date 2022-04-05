@@ -1,8 +1,34 @@
 * PI/E
 I created this repository during a c++ course. It's meant to be an excercise. I wanted to test things out and I am interested in the challenges that arise when you try to compute Pi or e to an arbritary precision. That is ultimately the goal of this excercise.
+I am aware that most of my code should be wrapped in a library, bur for now it is what it is.
 
-The Repository contains a data structure, which is my naive approach to precision arithmetic. GreatBin are numbers with the base of 2^31. I implemented basic arithmetic such as addition and multiplication. Adding more funcionality like factorials, devision is planned.
+** Usage
+After compiling via make the program can be executed by
+
+#+begin_src bash
+$ ./pi_e <precison>
+#+end_src
+
+The <precision> parameter is an integer that defines the number of digits in base 2^31 that are calculated for e and pi. If the partial sums are not changing the given digit, the calculation is finished.
+
+Note that the output is tehn converted into decimal by a crude estimate of how many digits in base 10 are useful. The output is not checked in respect to its precision.
+
+** GreatBin
+The Repository contains a data structure, which is my naive approach to precision arithmetic. GreatBin are numbers with the base of 2^31. I implemented basic arithmetic such as addition and multiplication.
+
+** GreatBinExp
+GreatBinExp is build from GreatBin. Additionaly it contains an exponent and is capable to represent floating point numbers.
 
 ** Calculating PI
+Pi is calculated using the rather inefficient formula:
+
+#+begin_src latex
+\pi = 2 * \sum_{n=0}^\inf \frac{n!}{(2n+1)!!}
+#+end_src
 
 ** Calculating E
+e is calculated using
+
+#+begin_src latex
+e =  \sum_{n=0}^\inf \frac{1}{n!}
+#+end_src

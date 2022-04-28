@@ -29,7 +29,7 @@ struct GreatBinExp{
     GreatBinExp mul(GreatBinExp&);
     std::pair<GreatBinExp, GreatBinExp> div(GreatBinExp&);
 
-    // Returns the decade representation as a pair of vectors.
+    // Returns the decimal representation as a pair of vectors.
     // the first represents the digits greater 1
     // the second represents the digits smaller 1
     std::pair<std::vector<short>, std::vector<short>> dec_vector(int);

@@ -11,7 +11,7 @@ $ ./pi_e <precison>
 
 The <precision> parameter is an integer that defines the number of digits in base 2^31 that are calculated for e and pi. If the partial sums are not changing the given digit, the calculation is finished.
 
-Note that the output is tehn converted into decimal by a crude estimate of how many digits in base 10 are useful. The output is not checked in respect to its precision.
+Note that the output is then converted into decimal by a crude estimate of how many digits in base 10 are useful. The output is not checked in respect to its precision.
 
 ** GreatBin
 The Repository contains a data structure, which is my naive approach to precision arithmetic. GreatBin are numbers with the base of 2^31. I implemented basic arithmetic such as addition and multiplication.

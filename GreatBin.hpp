@@ -11,6 +11,11 @@ struct GreatBin {
     int DIGIT_NO_;
     // helper function for the division algorithm
     GreatBin find_beta(const GreatBin&,const GreatBin&, GreatBin*) const;
+    // modulus of a string
+    int str_mod(std::string&, long);
+    // division of a string
+    std::string str_div(std::string&, long);
+    bool str_greater (std::string&, std::string&);
   public:
     std::vector<int> digits_;
 
@@ -21,6 +26,9 @@ struct GreatBin {
 
     // cast long into GreatBin
     GreatBin(long);
+
+    // cast string into GreatBin
+    GreatBin(std::string);
 
     // Returns a GreatBin built from the digits given in the input vector.
     // @param digits_ a vector containing integers.

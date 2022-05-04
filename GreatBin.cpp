@@ -1,4 +1,7 @@
 #include "GreatBin.hpp"
+#include <cctype>
+#include <stdexcept>
+#include <string>
 
 
 // Constructors
@@ -18,19 +21,40 @@ GreatBin::GreatBin(long val)
   DIGIT_NO_ = digits_.size();
 }
 
-GreatBin::GreatBin(std::vector<int> digits_)
-  :DIGIT_NO_(digits_.size()), digits_(digits_){}
+GreatBin::GreatBin(std::vector<int> digits)
+  :DIGIT_NO_(digits.size()), digits_(digits){}
+
+GreatBin::GreatBin(std::string str)
+  :DIGIT_NO_(), digits_({}){
+  // check if str contains only digits
+  for ( auto it=str.begin(); it!=str.end(); ++it ){
+    if ( !std::isdigit(*it) ) throw std::invalid_argument { "non-digit string received.." };
+  }
+
+  // build digits from numerical string
+  long base = (long) std::numeric_limits<int>::max() + 1;
+  int digit;
+  bool done { false };
+
+  while (!done){
+    digit = str_mod(str, base);
+    digits_.push_back(digit);
+    str = str_div(str, base);
+  }
+
+  DIGIT_NO_ = digits_.size();
+}
+
 
 
 // print stuff
+// -----------
+//
 
 void GreatBin::print_digits(){
   for (auto rit = this->digits_.rbegin() ; rit != this->digits_.rend(); ++rit) {
     std::cout << *rit << " ";
   }
-  // for ( int digit : this->digits_ ) {
-  //   std::cout << digit << "  ";
-  // }
   std::cout << std::endl;
 }
 
@@ -62,7 +86,42 @@ std::string GreatBin::dec_string(){
   return str;
 }
 
+
+
+
 // utils
+// -----
+//
+
+// Function to compute num (mod a)
+int GreatBin::str_mod(std::string& num, long a){
+    // Initialize result
+    int res = 0;
+    for (int i = 0; i < num.length(); i++)
+        res = (res * 10 + (int)num[i] - '0') % a;
+    return res;
+}
+
+// Function to compute str devided by long
+std::string GreatBin::str_div( std::string& str, long d){
+  GreatBin res { 0 };
+  GreatBin divisor { d };
+  std::string divisor_str { divisor.dec_string() };
+  while ( str_greater( str, divisor_str ) ){
+    divisor = divisor.add( divisor );
+    divisor_str = divisor.dec_string();
+    res = res.add( one() );
+  }
+  return res.dec_string();
+}
+
+bool GreatBin::str_greater( std::string& s1, std::string& s2 ){
+  if ( s1.length()>s2.length() ) return true;
+  if ( s1.length()<s2.length() ) return false;
+  for ( int i=0; i<s1.length(); i++ )
+    if ( (int) s1[i] < (int) s2[i] ) return false;
+  return true;
+}
 
 void GreatBin::delete_leading_zeros(){
   int count {0};
@@ -105,7 +164,10 @@ bool GreatBin::less(const GreatBin& bin) const{
 }
 
 
+
 // arithmetics
+// -----------
+//
 
 GreatBin GreatBin::gb_and(const GreatBin& other){
   // build digits_ for return, s.t. its length coresponds to the longer operand

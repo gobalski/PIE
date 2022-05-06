@@ -28,18 +28,21 @@ GreatBin::GreatBin(std::string str)
   :DIGIT_NO_(), digits_({}){
   // check if str contains only digits
   for ( auto it=str.begin(); it!=str.end(); ++it ){
+ //   std::cout << *it << " ";
     if ( !std::isdigit(*it) ) throw std::invalid_argument { "non-digit string received.." };
   }
+  // std::cout << std::endl;
 
   // build digits from numerical string
   long base = (long) std::numeric_limits<int>::max() + 1;
-  int digit;
-  bool done { false };
+  long digit;
 
-  while (!done){
+  while ( str!="0" ){
     digit = str_mod(str, base);
-    digits_.push_back(digit);
     str = str_div(str, base);
+    // std::cout << "GreatBin Constructor: digit = " << digit << "\n";
+    // std::cout << "GreatBin Constructor: str = "   << str   << "\n";
+    digits_.push_back( (int) digit);
   }
 
   DIGIT_NO_ = digits_.size();
@@ -94,9 +97,9 @@ std::string GreatBin::dec_string(){
 //
 
 // Function to compute num (mod a)
-int GreatBin::str_mod(std::string& num, long a){
+long GreatBin::str_mod(std::string& num, long a){
     // Initialize result
-    int res = 0;
+    long res = 0;
     for (int i = 0; i < num.length(); i++)
         res = (res * 10 + (int)num[i] - '0') % a;
     return res;
@@ -106,10 +109,12 @@ int GreatBin::str_mod(std::string& num, long a){
 std::string GreatBin::str_div( std::string& str, long d){
   GreatBin res { 0 };
   GreatBin divisor { d };
-  std::string divisor_str { divisor.dec_string() };
-  while ( str_greater( str, divisor_str ) ){
-    divisor = divisor.add( divisor );
-    divisor_str = divisor.dec_string();
+  GreatBin tmp { divisor };
+  std::string tmp_str { divisor.dec_string() };
+  while ( str_greater( str, tmp_str ) ){
+    tmp = tmp.add( divisor );
+    tmp_str = tmp.dec_string();
+    // std::cout << "GreatBin str_div: tmp_str = " << tmp_str << "\n";
     res = res.add( one() );
   }
   return res.dec_string();
@@ -118,8 +123,12 @@ std::string GreatBin::str_div( std::string& str, long d){
 bool GreatBin::str_greater( std::string& s1, std::string& s2 ){
   if ( s1.length()>s2.length() ) return true;
   if ( s1.length()<s2.length() ) return false;
-  for ( int i=0; i<s1.length(); i++ )
-    if ( (int) s1[i] < (int) s2[i] ) return false;
+  for ( int i=0; i<s1.length(); i++ ){
+    // std::cout << "GreatBin str_greater: s1[" << i << "] :" << s1[i] << "\n";
+    // std::cout << "GreatBin str_greater: s2[" << i << "] :" << s2[i] << "\n";
+    if ( (int) s1[i] > (int) s2[i] ) return true;
+    else if ( (int) s1[i] < (int) s2[i] ) return false;
+  }
   return true;
 }
 

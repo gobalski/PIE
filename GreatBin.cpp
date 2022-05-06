@@ -126,8 +126,7 @@ bool GreatBin::str_greater( std::string& s1, std::string& s2 ){
   for ( int i=0; i<s1.length(); i++ ){
     // std::cout << "GreatBin str_greater: s1[" << i << "] :" << s1[i] << "\n";
     // std::cout << "GreatBin str_greater: s2[" << i << "] :" << s2[i] << "\n";
-    if ( (int) s1[i] > (int) s2[i] ) return true;
-    else if ( (int) s1[i] < (int) s2[i] ) return false;
+    if ( (int) s1[i] != (int) s2[i] ) return (int) s1[i] > (int) s2[i];
   }
   return true;
 }
